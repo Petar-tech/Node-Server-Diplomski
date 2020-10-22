@@ -2,3 +2,4 @@ lib
 dist
 src
 node_modules
+.env
