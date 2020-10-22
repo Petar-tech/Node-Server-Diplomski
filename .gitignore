@@ -1,5 +1,4 @@
 lib
 dist
-src
+build
 node_modules
-.env
