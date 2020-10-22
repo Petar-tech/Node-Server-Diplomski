@@ -1,11 +1,12 @@
 import { Router } from 'express'
+import cors from 'cors'
 import * as Units from '../schemas/schema'
 
 const router = Router()
 const { temp, press, humid } = Units.default
 
 router
-    .get('/:unit',async (req,resp) => {
+    .get('/:unit',cors(),async (req,resp) => {
         const unit = req.params?.unit
         let result;
 
