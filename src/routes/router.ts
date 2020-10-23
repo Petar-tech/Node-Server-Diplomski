@@ -1,36 +1,18 @@
-import { Router } from 'express'
-import cors from 'cors'
 import * as Units from '../schemas/schema'
+import { socket as io } from '../index'
+import { Model,Document } from 'mongoose'
 
-const router = Router()
-const { temp, press, humid } = Units.default
+function setupStream(doc:Model<Document,{}>,name:string){
+    const docStream = doc.watch()
 
-router
-    .get('/:unit',cors(),async (req,resp) => {
-        const unit = req.params?.unit
-        let result;
-
-        switch(unit){
-            case 'temp':
-                result = await temp.find()
-                resp.status(200)
-                resp.send(result)
-                break
-            case 'press':
-                result = await press.find()
-                resp.status(200)
-                resp.send(result)
-                break
-            case 'humid':
-                result = await humid.find()
-                resp.status(200)
-                resp.send(result)
-                break
-            default:
-                resp.status(404)
-                resp.send("<h1>404</h1>")
-                break
-        }
-    })
-
-export default router
+    docStream.on('change',next =>
+        io.compress(true)
+        .emit(`${name}-data`, next)
+    )
+}
+ 
+export default function configureStream(){
+    for(const [key,value] of Object.entries(Units.default)){
+        setupStream(value,key)
+    }
+}

@@ -1,12 +1,17 @@
 import 'dotenv/config'
+
+import  io from 'socket.io'
 import express from 'express'
 import { connect } from "mongoose"
-
-import router from './routes/router'
+import { createServer } from 'http'
+import configureStream from './routes/router'
 
 const port = process.env.PORT || 8000
+const app = express()
+const server = createServer(app)
+export const socket = io(server)
 
-const server = express()
+configureStream()
 
 connect(process.env.MONGO_URI as string,
     {
@@ -16,8 +21,6 @@ connect(process.env.MONGO_URI as string,
     () => console.log("Connected to database.")
 )
 
-server.get('/',(req,resp) => resp.send("<h1>Nothing.</h1>"))
-
-server.use('/data',router)
+app.use(express.static('public'))
 
 server.listen(port,() => console.log(`Listening on PORT: ${port}`))
