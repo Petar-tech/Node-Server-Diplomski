@@ -21,6 +21,4 @@ connect(process.env.MONGO_URI as string,
     () => console.log("Connected to database.")
 )
 
-app.use(express.static('public'))
-
 server.listen(port,() => console.log(`Listening on PORT: ${port}`))
